@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                    String   @id @default(cuid())
+  mongoId               String?  @unique
+  name                  String
+  email                 String   @unique
+  password              String
+  agencyName            String
+  role                  String   @default("Intern")
+  status                String   @default("pending")
+  emailVerified         Boolean  @default(false)
+  permissions           Json?
+  skills                Json?
+  assignedClients       Json?
+  chatStatus            String   @default("Available")
+  phone                 String   @default("")
+  ownerName             String   @default("")
+  defaultCurrency       String   @default("INR")
+  defaultLanguage       String   @default("English")
+  passwordResetToken    String   @default("")
+  passwordResetExpires  DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([agencyName, status])
+  @@index([role])
+}
+
+model Client {
+  id                  String   @id @default(cuid())
+  mongoId             String?  @unique
+  userId              String
+  agencyName          String
+  businessName        String
+  industry            String
+  businessType        String   @default("")
+  location            String   @default("")
+  contactPerson       String   @default("")
+  phone               String   @default("")
+  email               String   @default("")
+  instagramHandle     String   @default("")
+  facebookPage        String   @default("")
+  whatsappNumber      String   @default("")
+  brandColors         String   @default("")
+  targetAudience      String   @default("")
+  mainProducts        String   @default("")
+  pipelineStatus      String   @default("Active")
+  status              String   @default("Active")
+  packageName         String   @default("")
+  monthlyFee          Float    @default(0)
+  advancePaid         Float    @default(0)
+  balancePending      Float    @default(0)
+  postsPerMonth       Int      @default(0)
+  reelsPerMonth       Int      @default(0)
+  storiesPerMonth     Int      @default(0)
+  startDate           DateTime?
+  renewalDate         DateTime?
+  contractUrl         String   @default("")
+  visibleToAllTeam    Boolean  @default(false)
+  assignedTeamMembers Json?
+  brandBrain          Json?
+  notes               String   @default("")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([agencyName, status])
+  @@index([userId])
+}
+
+model Lead {
+  id              String   @id @default(cuid())
+  mongoId         String?  @unique
+  agencyName      String
+  userId          String
+  clientId        String?
+  source          String   @default("manual")
+  placeId         String   @default("")
+  businessName    String
+  industry        String   @default("")
+  category        String   @default("")
+  location        String   @default("")
+  address         String   @default("")
+  phone           String   @default("")
+  website         String   @default("")
+  googleMapsUri   String   @default("")
+  rating          Float    @default(0)
+  reviewCount     Int      @default(0)
+  latitude        Float?
+  longitude       Float?
+  score           Int      @default(0)
+  status          String   @default("New")
+  priority        String   @default("Medium")
+  ownerNotes      String   @default("")
+  nextAction      String   @default("")
+  lastContactedAt DateTime?
+  dataExpiresAt   DateTime?
+  searchQuery      String  @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([agencyName, placeId])
+  @@index([agencyName, status])
+  @@index([score])
+}
+
+model Reel {
+  id                  String   @id @default(cuid())
+  mongoId             String?  @unique
+  userId              String
+  clientId            String
+  productName         String   @default("")
+  goal                String   @default("")
+  duration            String   @default("15 sec")
+  tone                String   @default("")
+  language            String   @default("")
+  hook                String   @default("")
+  script              String   @default("")
+  scenes              Json?
+  voiceover           String   @default("")
+  caption             String   @default("")
+  hashtags            Json?
+  editingInstructions String   @default("")
+  coverPrompt         String   @default("")
+  status              String   @default("Idea")
+  assignedTo          String   @default("")
+  videoProvider       String   @default("")
+  videoJobId          String   @default("")
+  videoStatus         String   @default("Not Requested")
+  videoUrl            String   @default("")
+  videoPrompt         String   @default("")
+  videoError          String   @default("")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([clientId, status])
+  @@index([videoJobId])
+}
+
+model Task {
+  id        String   @id @default(cuid())
+  mongoId   String?  @unique
+  userId    String
+  clientId  String
+  title     String
+  status    String   @default("Pending")
+  priority  String   @default("Medium")
+  assignedTo String  @default("")
+  dueDate   DateTime?
+  notes     String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId, status])
+}
+
+model Invoice {
+  id               String   @id @default(cuid())
+  mongoId          String?  @unique
+  userId           String
+  clientId         String
+  packageId        String?
+  invoiceNumber    String
+  month            Int
+  year             Int
+  customerEmail    String   @default("")
+  customerWhatsapp String   @default("")
+  billingFrom      String   @default("")
+  billingAddress   String   @default("")
+  lineItems        Json?
+  subtotal         Float    @default(0)
+  discount         Float    @default(0)
+  tax              Float    @default(0)
+  amount           Float    @default(0)
+  paidAmount       Float    @default(0)
+  status           String   @default("Unpaid")
+  issueDate        DateTime @default(now())
+  dueDate          DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([clientId, status])
+  @@index([invoiceNumber])
+}
+
+model GenericRecord {
+  id         String   @id @default(cuid())
+  mongoId    String?  @unique
+  agencyName String
+  userId     String?
+  clientId   String?
+  type       String
+  data       Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([agencyName, type])
+  @@index([clientId, type])
+}
